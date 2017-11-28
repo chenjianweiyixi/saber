@@ -8,7 +8,7 @@ var postData = querystring.stringify({
   var options = {
     hostname: 'localhost',
     port: 9999,
-    path: '/index.htwml?vx=32',
+    path: '/index.html?vx=32',
     method: 'POST',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
