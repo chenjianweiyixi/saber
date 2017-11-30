@@ -10,6 +10,7 @@
 	评价该方案：
 	  1. 控制了执行顺序，也控制子任务间的依存调用关系。 让coder不需要关注task间的依存调度关系。
  */
+ 
 class Handler {
   async exex() {
     return 1 + await this.action1() + await this.action2();
@@ -19,6 +20,7 @@ class Handler {
      return new Promise((resovle)=>{
        setTimeout(()=>{
          console.info(`Action1 Done!`)
+         this.a = 123;
          resovle(1);
        }, 3000)
      });

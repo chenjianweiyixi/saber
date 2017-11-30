@@ -46,10 +46,85 @@ const Handler = function* () {
     yield "Done!";
 }
 
-
-
 const handler = Handler();
 for ( it of handler) {
 	console.log(it)
 }
 
+ const add = function * (num) {
+ 	var x = yield num + 1 ;
+ 	console.log(`x:${x}`);
+    return x;
+ }
+
+const addGen = add(1);
+console.info(addGen.next());
+console.info(addGen.next());
+
+
+
+
+function * postpostMiddleWare(subFnc) {
+	yield subFnc
+}
+
+function * postMidlleWire(subFnc) {
+	this.user = userService.getUser();
+	return yield subFnc
+}
+
+
+function * userHandler(x){
+	this.user = this.user + x;
+	yield 1;
+	yield 1;
+	yield 1;
+}
+
+
+
+postMidlleWire(userHandler(x))
+
+try {
+	constr(md1,md2,md3,md4, xxx);	
+}
+
+this.data
+
+constr = function(...xx){
+	xx.forEach(function(item){
+		item[asdcx,,,.]
+	})
+}
+
+
+
+
+
+function* worker() {
+	yield "1";
+	yield "1";
+	yield "1";
+	yield "1";
+	yield "1";
+}
+
+function workerManager() {
+   const w = worker();
+   let wo = w.next();
+
+   while(!wo.done) {
+   	wo = w.next(wo.value)  
+   }
+}
+
+
+async worker () {
+	await 1;
+	await 1;
+	await 1;
+	await 1;
+	await 1;
+	await 1;
+}
+worker();
