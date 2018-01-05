@@ -1,11 +1,11 @@
 /**
  *  function* 这种声明方式(function关键字后跟一个星号）会定义一个生成器函数 (generator function)，它返回一个  Generator  对象。
-
+     GeneratorFunction不支持new，所以也就不支持 class * a  {} 的声明方式。
  * syntax: 
     1.[rv] = yield [expression];
     	expression: 定义通过迭代器协议从生成器函数返回的值。如果省略，则返回undefined。 
  	    rv: 返回传递给生成器的next()方法的可选值，以恢复其执行。
- 	    评价： rv = yield expression太具有直观欺骗性，给人直接的感觉时间将yield expression的执行结果赋值给rv, 
+ 	    评价： rv = yield expression太具有直观欺骗性，给人直接的感觉时间将 expression 的执行结果赋值给rv, 
  	          但是实际情况是通过外部调用下一个generator.next(result)来赋值的，即 result->rv, 而不是yield expression -> rv
 
 	2. yield* [[expression]];
@@ -13,9 +13,11 @@
 
 
 	评价该方案：
-	  1. 控制了执行顺序，没有控制子任务间的依存调用关系； 依存调度关系需要Coder 依据执行结果自行控制。
+	  1. 控制了执行顺序，没有控制子任务间的依存调用关系； 依存调度关系需要 Coder 依据执行结果自行控制。
+	  
+	
  */
- const Doer = function* () {
+const Doer = function* () {
 	yield "Doer";
 }
 const Toer = function* () {
@@ -26,7 +28,7 @@ const Toer = function* () {
 const Moer = function* () {	
 	yield "Moer1";
 	yield "Moer2";	
-	return "Moer"
+	return "This is Moer"
 }
 
 const Handler = function* () {
@@ -35,14 +37,19 @@ const Handler = function* () {
          resovle(123);
        }, 2000)
      });
-    yield "Great!";
-    yield* Doer(); 
-    yield* Toer();
+	yield "Great!";
+
+	yield* "ABC";
     yield* [123, 456];
-    
+    yield* Doer(); 
+	yield* Toer();    
+
+	let well =  yield "WELL";
+    console.warn(`well:${well}`); //> well:undefined
+	let doer =  yield* Doer();
+    console.warn(`doer:${doer}`);  //> doer:undefined
     let moer =  yield* Moer();
-    console.warn(`moer:${moer}`);
-    // console.warn(Doer().next());
+    console.warn(`moer:${moer}`); //> moer:This is Moer
     yield "Done!";
 }
 
@@ -51,80 +58,52 @@ for ( it of handler) {
 	console.log(it)
 }
 
+
+
+/**
+ * yeild 赋值问题。
+ * rv = yield expression太具有直观欺骗性，给人直接的感觉时间将 expression 的执行结果赋值给rv, 
+ * 但是实际情况是通过外部调用下一个generator.next(result)来赋值的，即 result->rv, 而不是yield expression -> rv
+ */
  const add = function * (num) {
  	var x = yield num + 1 ;
- 	console.log(`x:${x}`);
-    return x;
+ 	console.log(`x:${x}`); // > x:undefined
  }
-
 const addGen = add(1);
 console.info(addGen.next());
 console.info(addGen.next());
 
-
-
-
-function * postpostMiddleWare(subFnc) {
-	yield subFnc
+const add2 = function * (num) {
+	var x = yield num + 1 ;
+	console.log(`x:${x}`); // > x:bingo
 }
+const addGen2 = add2(1);
+console.info(addGen2.next());
+console.info(addGen2.next("bingo"));
 
-function * postMidlleWire(subFnc) {
-	this.user = userService.getUser();
-	return yield subFnc
+
+
+
+/**
+ * 处理异步任务
+ */
+const Handler = function * () {
+	yield asyncTask1();
+    yield asyncTask2();
 }
-
-
-function * userHandler(x){
-	this.user = this.user + x;
-	yield 1;
-	yield 1;
-	yield 1;
-}
-
-
-
-postMidlleWire(userHandler(x))
-
-try {
-	constr(md1,md2,md3,md4, xxx);	
-}
-
-this.data
-
-constr = function(...xx){
-	xx.forEach(function(item){
-		item[asdcx,,,.]
+const asyncTask1 = ()=>{
+	return new Promise((resovle, reject)=>{
+		// todo async task
+		resovle();
 	})
 }
-
-
-
-
-
-function* worker() {
-	yield "1";
-	yield "1";
-	yield "1";
-	yield "1";
-	yield "1";
+const asyncTask2 = ()=>{
+	return new Promise((resovle, reject)=>{
+		// todo async task
+		resovle();
+	})
 }
-
-function workerManager() {
-   const w = worker();
-   let wo = w.next();
-
-   while(!wo.done) {
-   	wo = w.next(wo.value)  
-   }
-}
-
-
-async worker () {
-	await 1;
-	await 1;
-	await 1;
-	await 1;
-	await 1;
-	await 1;
-}
-worker();
+const handler = Handler();
+handler.next().value.then(()=>{
+	handler.next();
+})
